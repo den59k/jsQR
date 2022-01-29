@@ -7,6 +7,11 @@ function numBetween(value: number, min: number, max: number): number {
   return value < min ? min : value > max ? max : value;
 }
 
+let grayscalePixelsMatrix: Matrix = null
+let blackPointsMatrix: Matrix = null
+let binarizeMatrix: BitMatrix = null
+let invertedMatrix: BitMatrix = null
+
 // Like BitMatrix but accepts arbitry Uint8 values
 class Matrix {
   private data: Uint8ClampedArray;
@@ -28,7 +33,9 @@ export function binarize(data: Uint8ClampedArray, width: number, height: number,
     throw new Error("Malformed data passed to binarizer.");
   }
   // Convert image to greyscale
-  const greyscalePixels = new Matrix(width, height);
+  if (grayscalePixelsMatrix === null)
+    grayscalePixelsMatrix = new Matrix(width, height);
+  const greyscalePixels = grayscalePixelsMatrix
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
       const r = data[((y * width + x) * 4) + 0];
@@ -40,7 +47,9 @@ export function binarize(data: Uint8ClampedArray, width: number, height: number,
   const horizontalRegionCount = Math.ceil(width / REGION_SIZE);
   const verticalRegionCount = Math.ceil(height / REGION_SIZE);
 
-  const blackPoints = new Matrix(horizontalRegionCount, verticalRegionCount);
+  if (blackPointsMatrix === null)
+    blackPointsMatrix = new Matrix(horizontalRegionCount, verticalRegionCount)
+  const blackPoints = blackPointsMatrix;
   for (let verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
     for (let hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {
       let sum = 0;
@@ -87,10 +96,14 @@ export function binarize(data: Uint8ClampedArray, width: number, height: number,
     }
   }
 
-  const binarized = BitMatrix.createEmpty(width, height);
+  if (binarizeMatrix === null)
+    binarizeMatrix = BitMatrix.createEmpty(width, height)
+  const binarized = binarizeMatrix;
   let inverted: BitMatrix = null;
   if (returnInverted) {
-    inverted = BitMatrix.createEmpty(width, height);
+    if (invertedMatrix === null)
+      invertedMatrix = BitMatrix.createEmpty(width, height)
+    inverted = invertedMatrix;
   }
   for (let verticalRegion = 0; verticalRegion < verticalRegionCount; verticalRegion++) {
     for (let hortizontalRegion = 0; hortizontalRegion < horizontalRegionCount; hortizontalRegion++) {

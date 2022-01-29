@@ -9,12 +9,13 @@ module.exports = {
     libraryExport: "default",
     library: "jsQR",
   },
+  mode: "production",
   resolve: {
     extensions: [".ts"]
   },
   module: {
     rules: [
-      { test: /\.ts$/, use: [{ loader: "awesome-typescript-loader" }] }
+      { test: /\.ts$/, loader: "ts-loader" }
     ]
   }
 }
